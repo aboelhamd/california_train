@@ -1,9 +1,9 @@
 #include <pthread.h>
 
 struct station {
-	pthread_mutex_t seat_mutex, passen_mutex;
-	pthread_cond_t cond_wait_passen, cond_avail_seats;
-	int curr_avail_seats, curr_wait_passen;
+	pthread_mutex_t mutex;
+	pthread_cond_t train_cond, passeng_cond;
+	int curr_avail_seats, curr_wait_passen, free_seats, is_train_wait;
 };
 
 void station_init(struct station *station);
