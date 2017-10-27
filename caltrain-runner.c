@@ -133,12 +133,7 @@ int main() {
 				exit(1);
 			}
 
-//			printf("threads_completed %d\n", threads_completed);
-
 			if (threads_completed > 0) {
-				printf(
-						"threads_reaped %d , threads_to_reap %d\n",
-						threads_reaped, threads_to_reap);
 				if ((pass % 2) == 0)
 					usleep(random() % 2);
 				threads_reaped++;

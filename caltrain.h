@@ -3,7 +3,7 @@
 struct station {
 	pthread_mutex_t mutex;
 	pthread_cond_t cond_wait_passen, cond_avail_seats;
-	int avail_seats, wait_passen, on_passen;
+	int avail_seats, wait_passen, ready_passen;
 };
 
 void station_init(struct station *station);
