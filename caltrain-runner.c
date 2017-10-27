@@ -22,10 +22,9 @@
 volatile int threads_completed = 0;
 
 void*
-passenger_thread(void *arg)
-{
-	struct station *station = (struct station*)arg;
-	station_wait_for_train(station);//assume threads sleep here
+passenger_thread(void *arg) {
+	struct station *station = (struct station*) arg;
+	station_wait_for_train(station); //assume threads sleep here
 	__sync_add_and_fetch(&threads_completed, 1);
 	return NULL;
 }
@@ -38,9 +37,8 @@ struct load_train_args {
 volatile int load_train_returned = 0;
 
 void*
-load_train_thread(void *args)
-{
-	struct load_train_args *ltargs = (struct load_train_args*)args;
+load_train_thread(void *args) {
+	struct load_train_args *ltargs = (struct load_train_args*) args;
 	station_load_train(ltargs->station, ltargs->free_seats);
 	load_train_returned = 1;
 	return NULL;
@@ -49,20 +47,17 @@ load_train_thread(void *args)
 const char* alarm_error_str;
 int alarm_timeout;
 
-void
-_alarm(int seconds, const char *error_str)
-{
+void _alarm(int seconds, const char *error_str) {
 	alarm_timeout = seconds;
 	alarm_error_str = error_str;
 	alarm(seconds);
 }
 
-void
-alarm_handler(int foo)
-{
-	fprintf(stderr, "Error: Failed to complete after %d seconds. Something's "
-		"wrong, or your system is terribly slow. Possible error hint: [%s]\n",
-		alarm_timeout, alarm_error_str);
+void alarm_handler(int foo) {
+	fprintf(stderr,
+			"Error: Failed to complete after %d seconds. Something's "
+					"wrong, or your system is terribly slow. Possible error hint: [%s]\n",
+			alarm_timeout, alarm_error_str);
 	exit(1);
 }
 
@@ -73,9 +68,7 @@ alarm_handler(int foo)
 /*
  * This creates a bunch of threads to simulate arriving trains and passengers.
  */
-int
-main()
-{
+int main() {
 	struct station station;
 	station_init(&station);
 
@@ -84,7 +77,8 @@ main()
 	signal(SIGALRM, alarm_handler);
 
 	// Make sure station_load_train() returns immediately if no waiting passengers.
-	_alarm(1, "station_load_train() did not return immediately when no waiting passengers");
+	_alarm(1,
+			"station_load_train() did not return immediately when no waiting passengers");
 	station_load_train(&station, 0);
 	station_load_train(&station, 10);
 	_alarm(0, NULL);
@@ -105,7 +99,8 @@ main()
 	}
 
 	// Make sure station_load_train() returns immediately if no free seats.
-	_alarm(2, "station_load_train() did not return immediately when no free seats");
+	_alarm(2,
+			"station_load_train() did not return immediately when no free seats");
 	station_load_train(&station, 0);
 	_alarm(0, NULL);
 
@@ -114,8 +109,9 @@ main()
 	const int max_free_seats_per_train = 50;
 	int pass = 0;
 	while (passengers_left > 0) {
-		_alarm(2, "Some more complicated issue appears to have caused passengers "
-			"not to board when given the opportunity");
+		_alarm(2,
+				"Some more complicated issue appears to have caused passengers "
+						"not to board when given the opportunity");
 
 		int free_seats = random() % max_free_seats_per_train;
 
@@ -136,7 +132,13 @@ main()
 				fprintf(stderr, "Error: station_load_train returned early!\n");
 				exit(1);
 			}
+
+//			printf("threads_completed %d\n", threads_completed);
+
 			if (threads_completed > 0) {
+				printf(
+						"threads_reaped %d , threads_to_reap %d\n",
+						threads_reaped, threads_to_reap);
 				if ((pass % 2) == 0)
 					usleep(random() % 2);
 				threads_reaped++;
@@ -167,9 +169,10 @@ main()
 
 		passengers_left -= threads_reaped;
 		total_passengers_boarded += threads_reaped;
-		printf("Train departed station with %d new passenger(s) (expected %d)%s\n",
-			threads_to_reap, threads_reaped,
-			(threads_to_reap != threads_reaped) ? " *****" : "");
+		printf(
+				"Train departed station with %d new passenger(s) (expected %d)%s\n",
+				threads_to_reap, threads_reaped,
+				(threads_to_reap != threads_reaped) ? " *****" : "");
 
 		if (threads_to_reap != threads_reaped) {
 			fprintf(stderr, "Error: Too many passengers on this train!\n");
@@ -184,8 +187,9 @@ main()
 		return 0;
 	} else {
 		// I don't think this is reachable, but just in case.
-		fprintf(stderr, "Error: expected %d total boarded passengers, but got %d!\n",
-			total_passengers, total_passengers_boarded);
+		fprintf(stderr,
+				"Error: expected %d total boarded passengers, but got %d!\n",
+				total_passengers, total_passengers_boarded);
 		return 1;
 	}
 }

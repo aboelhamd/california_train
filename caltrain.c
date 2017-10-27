@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <pthread.h>
 #include <stdio.h>
 #include "caltrain.h"
@@ -69,3 +70,6 @@ void station_on_board(struct station *station) {
 
 //	if (station->wait_passen == 0 || station->avail_seats == 0)
 }
+=======
+
+>>>>>>> master

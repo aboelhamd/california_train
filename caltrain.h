@@ -2,8 +2,12 @@
 
 struct station {
 	pthread_mutex_t mutex;
+<<<<<<< HEAD
 	pthread_cond_t cond_wait_passen, cond_avail_seats;
 	int avail_seats, wait_passen, on_passen;
+=======
+
+>>>>>>> master
 };
 
 void station_init(struct station *station);
